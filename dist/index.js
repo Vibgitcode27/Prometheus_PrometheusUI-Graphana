@@ -19,23 +19,31 @@ app.use(express_1.default.json());
 let counter = new prom_client_1.Counter({
     name: "http_number_of_requests",
     help: "Number of Http req made",
-    labelNames: ["route", "statusbar"],
+    labelNames: ["route", "method", "status_code"],
 });
-app.get("/user", (req, res) => {
+const requestCountMiddleware = (req, res, next) => {
     counter.inc({
-        route: "/user",
-        statusbar: "5",
+        route: req.path,
+        method: req.method,
+        status_code: res.statusCode,
     });
+    next();
+};
+app.use(requestCountMiddleware);
+app.get("/user", (req, res) => {
+    // We can create a middleware instead of doing this in every route
+    // counter.inc({
+    //   route: "/user",
+    // });
     res.send({
         name: "John Doe",
         age: 25,
     });
 });
 app.get("/todo", (req, res) => {
-    counter.inc({
-        route: "/todo",
-        statusbar: "3",
-    });
+    // counter.inc({
+    //   route: "/todo",
+    // });
     res.send({
         name: "Koka Bura",
         age: 29,
