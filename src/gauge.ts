@@ -34,10 +34,12 @@ app.use(requestCurrentTCPGaugeMiddleware);
 // gauge based on curret users
 
 app.get("/user", (req, res) => {
-  res.send({
-    name: "John Doe",
-    age: 25,
-  });
+  setTimeout(() => {
+    res.send({
+      name: "John Doe",
+      age: 25,
+    });
+  }, 10000);
 });
 
 app.get("/metrics", async (req, res) => {
